@@ -32,6 +32,12 @@ fpsClock = pygame.time.Clock()
 fontObj = pygame.font.Font('freesansbold.ttf', 20)
 scoreFont = pygame.font.Font('freesansbold.ttf', 32)
 
+# 背景音乐
+pygame.mixer.init()
+pygame.mixer.music.load('background.mp3')
+pygame.mixer.music.set_volume(0.2)
+pygame.mixer.music.play(-1)
+soundEat = pygame.mixer.Sound('eat.ogg')
 
 # 辅助函数
 def initGame():
@@ -44,6 +50,8 @@ def initGame():
     fruitPos = None
     speed = INITSPEED
     snake = Snake()
+    pygame.mixer.music.rewind()
+    pygame.mixer.music.unpause()
 def drawFinal():
     pygame.draw.rect(DISPLAYSURF, RED, \
             (200, 120, 400, 300))
@@ -94,6 +102,7 @@ def redraw():
 def checkCollision():
     # 吃到食物
     if tuple(snake.headPos) == fruitPos:
+        soundEat.play()
         return 1
     # 碰到自己身体
     if tuple(snake.headPos) in snake.bodyList[1:]:
@@ -113,8 +122,10 @@ while True:
             if event.key == K_SPACE:
                 if GAMESTATE == 'playing':
                     GAMESTATE = 'pausing'
+                    pygame.mixer.music.pause()
                 elif GAMESTATE == 'pausing':
                     GAMESTATE = 'playing'
+                    pygame.mixer.music.unpause()
             if GAMESTATE == 'playing' and not isLocked:
                 newDirection = ''
                 if event.key == K_DOWN:
@@ -146,6 +157,7 @@ while True:
             drawFinal()
         redraw()
     elif GAMESTATE == 'over':
+        pygame.mixer.music.pause()
         drawFinal()
     pygame.display.update()
     fpsClock.tick(speed)
