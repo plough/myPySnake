@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # encoding: utf-8
-# BUG: 快速转方向时，舌头可能会咬到第二节身体，导致游戏非正常结束
 
 from snake import Snake
 import random
@@ -22,6 +21,7 @@ COLUMNS = 25
 GAMESTATE = 'playing'
 score = 0
 isFruitShowing = False
+isLocked = False # 加锁，防止一个时间周期内改变两次方向，碰到蛇身第二节。
 fruitPos = None
 snake = Snake()
 #
@@ -103,6 +103,8 @@ def checkCollision():
 redraw()
 
 while True:
+    if isLocked:
+        isLocked = False
     for event in pygame.event.get():
         if event.type == KEYDOWN:
             if GAMESTATE == 'over' and event.key == K_RETURN:
@@ -113,7 +115,7 @@ while True:
                     GAMESTATE = 'pausing'
                 elif GAMESTATE == 'pausing':
                     GAMESTATE = 'playing'
-            if GAMESTATE == 'playing':
+            if GAMESTATE == 'playing' and not isLocked:
                 newDirection = ''
                 if event.key == K_DOWN:
                     newDirection = 'down'
@@ -125,6 +127,7 @@ while True:
                     newDirection = 'right'
                 if snake.isValidDirection(newDirection):
                     snake.changeDirection(newDirection)
+                    isLocked = True
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
