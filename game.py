@@ -6,6 +6,7 @@ import random
 import pygame, sys
 from pygame.locals import *
 
+
 pygame.init()
 
 USIZE = 20 # 单位长度
@@ -13,18 +14,17 @@ ROWS = 25
 COLUMNS = 25
 size = USIZE * COLUMNS + 300, USIZE * ROWS
 
-screen = pygame.display.set_mode(size)
-pygame.display.set_caption('mysnake 1.0')
-
 # set up the colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
+GREEN = (20, 160, 15)
 #
 GAMESTATE = 'playing'
 score = 0
 isFruitShowing = False
 isLocked = False # 加锁，防止一个时间周期内改变两次方向，碰到蛇身第二节。
+isFullScreen = False
 fruitPos = None
 snake = Snake()
 #
@@ -34,6 +34,22 @@ fpsClock = pygame.time.Clock()
 #
 fontObj = pygame.font.Font('freesansbold.ttf', 20)
 scoreFont = pygame.font.Font('freesansbold.ttf', 32)
+
+def newScreen(size, full=False):
+    global isFullScreen
+    screen = None
+    if full:
+        isFullScreen = True
+        screen = pygame.display.set_mode(size, FULLSCREEN)
+    else:
+        isFullScreen = False
+        screen = pygame.display.set_mode(size)
+    return screen
+
+#  screen = pygame.display.set_mode(size, FULLSCREEN)
+screen = newScreen(size)
+pygame.display.set_caption('mysnake 1.0')
+
 
 # 背景音乐
 pygame.mixer.init()
@@ -93,7 +109,7 @@ def drawSnake():
                 (pos[0]*USIZE, pos[1]*USIZE, USIZE, USIZE))
 
 def redraw():
-    screen.fill(BLACK)
+    screen.fill(GREEN)
     # 分割线
     pygame.draw.line(screen, RED, (502, 0), (502, 500), 3)
     promptText = fontObj.render('Press "SPACE" to', True, WHITE)
@@ -124,6 +140,8 @@ while True:
         if event.type == KEYDOWN:
             if event.key == K_ESCAPE:
                 sys.exit()
+            if event.key == K_f:
+                screen = newScreen(size, full=not isFullScreen)
 
             if GAMESTATE == 'over' and event.key == K_RETURN:
                 print 'Return press'
