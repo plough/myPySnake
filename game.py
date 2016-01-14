@@ -32,8 +32,10 @@ INITSPEED = 5
 speed = INITSPEED # FPS
 fpsClock = pygame.time.Clock()
 #
-fontObj = pygame.font.Font('freesansbold.ttf', 20)
-scoreFont = pygame.font.Font('freesansbold.ttf', 32)
+#  fontObj = pygame.font.Font('freesansbold.ttf', 20)
+fontObj = pygame.font.SysFont('楷体', 20)
+#  scoreFont = pygame.font.Font('freesansbold.ttf', 32)
+scoreFont = pygame.font.SysFont('楷体', 32)
 
 def newScreen(size, full=False):
     global isFullScreen
@@ -81,13 +83,13 @@ def drawFinal():
             (210, 130, 380, 280))
     overText = scoreFont.render('GAME OVER!',\
             True, WHITE)
-    scoreText = scoreFont.render('Your Score: ' + str(score),\
+    scoreText = scoreFont.render(u'最终得分: ' + str(score),\
             True, WHITE)
-    promptText = fontObj.render('Press "ENTER" to RESTART',
+    promptText = fontObj.render(u'按 "回车键" 再玩一次',
             True, WHITE)
     screen.blit(overText, (300, 200))
     screen.blit(scoreText, (300, 240))
-    screen.blit(promptText, (280, 290))
+    screen.blit(promptText, (300, 290))
 
 def drawFruit():
     """生成并绘制食物"""
@@ -112,11 +114,11 @@ def redraw():
     screen.fill(GREEN)
     # 分割线
     pygame.draw.line(screen, RED, (502, 0), (502, 500), 3)
-    promptText = fontObj.render('Press "SPACE" to', True, WHITE)
-    promptText2 = fontObj.render('START/PAUSE', True, WHITE)
-    scoreText = scoreFont.render('Score: ' + str(score), True, WHITE)
+    promptText = fontObj.render(u'按 "空格键" 开始/暂停', True, WHITE)
+    #  promptText2 = fontObj.render(u'开始/暂停', True, WHITE)
+    scoreText = scoreFont.render(u'得分: ' + str(score), True, WHITE)
     screen.blit(promptText, (550, 100))
-    screen.blit(promptText2, (560, 120))
+    #  screen.blit(promptText2, (560, 120))
     screen.blit(scoreText, (570, 220))
     drawSnake()
     drawFruit()
