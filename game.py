@@ -3,6 +3,7 @@
 
 from snake import Snake
 import random
+import os
 import pygame, sys
 from pygame.locals import *
 
@@ -48,6 +49,9 @@ def newScreen(size, full=False):
         screen = pygame.display.set_mode(size)
     return screen
 
+def loadSound(fname):
+    return pygame.mixer.Sound(os.path.join('res', fname))
+
 #  screen = pygame.display.set_mode(size, FULLSCREEN)
 screen = newScreen(size)
 pygame.display.set_caption('mysnake 1.0')
@@ -55,13 +59,13 @@ pygame.display.set_caption('mysnake 1.0')
 
 # 背景音乐
 pygame.mixer.init()
-pygame.mixer.music.load('res/background.mp3')
+pygame.mixer.music.load(os.path.join('res', 'background.mp3'))
 #  pygame.mixer.music.load('res/bg.mp3')
 pygame.mixer.music.set_volume(0.2)
 pygame.mixer.music.play(-1)
-soundEat = pygame.mixer.Sound('res/eat.ogg')
-soundFail = pygame.mixer.Sound('res/gameover.ogg')
-soundJiayou = pygame.mixer.Sound('res/jiayou.ogg')
+soundEat = loadSound('eat.ogg')
+soundFail = loadSound('gameover.ogg')
+soundJiayou = loadSound('jiayou.ogg')
 
 # 辅助函数
 def initGame():
