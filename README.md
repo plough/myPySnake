@@ -1,5 +1,5 @@
 # myPySnake
-用pygame做的一个简单的贪吃蛇游戏。
+用Python和Pygame做的一个简单贪吃蛇游戏。
 
 python game.py 运行程序
 
