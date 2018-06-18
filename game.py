@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # encoding: utf-8
 
 from snake import Snake
@@ -80,6 +80,8 @@ def initGame():
     snake = Snake()
     pygame.mixer.music.rewind()
     pygame.mixer.music.unpause()
+
+
 def drawFinal():
     pygame.draw.rect(screen, RED, \
             (200, 120, 400, 300))
@@ -95,6 +97,7 @@ def drawFinal():
     screen.blit(scoreText, (300, 240))
     screen.blit(promptText, (300, 290))
 
+
 def drawFruit():
     """生成并绘制食物"""
     global isFruitShowing, fruitPos
@@ -109,10 +112,12 @@ def drawFruit():
             (fruitPos[0]*USIZE, fruitPos[1]*USIZE, USIZE, USIZE))
     isFruitShowing = True
 
+
 def drawSnake():
     for pos in snake.bodyList:
         pygame.draw.rect(screen, WHITE, \
                 (pos[0]*USIZE, pos[1]*USIZE, USIZE, USIZE))
+
 
 def redraw():
     screen.fill(GREEN)
@@ -127,6 +132,7 @@ def redraw():
     drawSnake()
     drawFruit()
 
+
 def checkCollision():
     # 吃到食物
     if tuple(snake.headPos) == fruitPos:
@@ -137,7 +143,9 @@ def checkCollision():
         return -1
     return 0
 
+
 redraw()
+
 
 while True:
     if isLocked:
@@ -150,7 +158,7 @@ while True:
                 screen = newScreen(size, full=not isFullScreen)
 
             if GAMESTATE == 'over' and event.key == K_RETURN:
-                print 'Return press'
+                print('Return press')
                 initGame()
             if event.key == K_SPACE:
                 if GAMESTATE == 'playing':

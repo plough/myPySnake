@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # encoding: utf-8
 
 class Snake:
@@ -23,12 +23,14 @@ class Snake:
             else:
                 tempY += 1
             self.bodyList.append((tempX, tempY))
+
     # 传入表示方向的字符串
     def changeDirection(self, newDirection):
         if self.isValidDirection(newDirection):
             self.direction = newDirection
         else:
             raise Exception('传入了错误的方向值')
+
     def isValidDirection(self, newDirection):
         if self.direction in ['up', 'down'] and newDirection in ['left', 'right']:
             return True
@@ -36,6 +38,7 @@ class Snake:
             return True
         else:
             return False
+
     # 前进一步
     def moveForward(self, eatFood=False):
         if self.direction == 'up':
