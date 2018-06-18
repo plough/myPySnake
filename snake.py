@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # encoding: utf-8
+import pygame
+from constants import *
+
 
 class Snake:
     def __init__(self, length = 3, headPos = [5,3], direction = 'right'):
@@ -66,3 +69,8 @@ class Snake:
             self.bodyList.pop()
         else:
             self.length += 1
+
+    def draw_self(self, screen):
+        for pos in self.bodyList:
+            pygame.draw.rect(screen, WHITE, \
+                    (pos[0]*USIZE, pos[1]*USIZE, USIZE, USIZE))

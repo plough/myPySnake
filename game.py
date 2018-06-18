@@ -6,21 +6,14 @@ import random
 import os
 import pygame, sys
 from pygame.locals import *
+from constants import *
 
 
 pygame.init()
 
-USIZE = 20 # 单位长度
-ROWS = 25
-COLUMNS = 25
+
 size = USIZE * COLUMNS + 300, USIZE * ROWS
 
-# set up the colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-GREEN = (20, 160, 15)
-#
 GAMESTATE = 'playing'
 score = 0
 isFruitShowing = False
@@ -29,7 +22,7 @@ isFullScreen = False
 fruitPos = None
 snake = Snake()
 #
-INITSPEED = 5
+
 speed = INITSPEED # FPS
 fpsClock = pygame.time.Clock()
 #
@@ -113,10 +106,7 @@ def drawFruit():
     isFruitShowing = True
 
 
-def drawSnake():
-    for pos in snake.bodyList:
-        pygame.draw.rect(screen, WHITE, \
-                (pos[0]*USIZE, pos[1]*USIZE, USIZE, USIZE))
+
 
 
 def redraw():
@@ -129,7 +119,8 @@ def redraw():
     screen.blit(promptText, (550, 100))
     #  screen.blit(promptText2, (560, 120))
     screen.blit(scoreText, (570, 220))
-    drawSnake()
+    # drawSnake()
+    snake.draw_self(screen)
     drawFruit()
 
 
