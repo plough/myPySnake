@@ -9,6 +9,7 @@ class Snake:
         """
         默认坐标系为25×25
         """
+        self.cut_tale = True
         self.length = length
         self.headPos = headPos
         self.direction = direction
@@ -43,7 +44,7 @@ class Snake:
             return False
 
     # 前进一步
-    def moveForward(self, eatFood=False):
+    def moveForward(self):
         if self.direction == 'up':
             if self.headPos[1] == 0:
                 self.headPos[1] = 24
@@ -65,10 +66,22 @@ class Snake:
             else:
                 self.headPos[0] -= 1
         self.bodyList.insert(0, tuple(self.headPos))
-        if not eatFood:
+        # if not eatFood:
+        if self.cut_tale:
             self.bodyList.pop()
         else:
-            self.length += 1
+            self.cut_tale = True
+        # else:
+        # self.length += 1
+
+    def grow(self):
+        self.cut_tale = False
+        # self.bodyList.insert(0, tuple(self.headPos))
+        # self.length += 1
+
+    def is_dead(self):
+        return tuple(self.headPos) in self.bodyList[1:]
+
 
     def draw_self(self, screen):
         for pos in self.bodyList:
