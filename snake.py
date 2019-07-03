@@ -5,13 +5,13 @@ from constants import *
 
 
 class Snake:
-    def __init__(self, length = 3, headPos = [5,3], direction = 'right'):
+    def __init__(self, length = 3, headPos = (5,3), direction = 'right'):
         """
         默认坐标系为25×25
         """
         self.cut_tale = True
         self.length = length
-        self.headPos = headPos
+        self.headPos = list(headPos)
         self.direction = direction
 
         self.bodyList = [tuple(headPos)] # 存储蛇身所在坐标

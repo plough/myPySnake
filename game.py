@@ -3,7 +3,6 @@
 
 from snake import Snake
 import random
-import os
 import pygame, sys
 from pygame.locals import *
 from constants import *
@@ -14,7 +13,7 @@ class SnakeGame:
     # 游戏状态
     class GameState:
         def __init__(self):
-            self.GAMESTATE = 'playing'
+            self.GAME_STATE = 'playing'
             self.screen_size = USIZE * COLUMNS + 300, USIZE * ROWS  # 屏幕尺寸
             self.score = 0  # 得分
             self.full_screen = False  # 是否全屏
@@ -54,12 +53,7 @@ class SnakeGame:
     def __init__(self):
         pygame.init()
 
-        self.gs = self.GameState()
-        self.fm = self.FoodManager()
-
-        self.new_direction_setted = False # 加锁，防止一个时间周期内改变两次方向，碰到蛇身第二节。
-
-        self.snake = Snake()  # 蛇对象
+        self.initGame()
 
         self.fpsClock = pygame.time.Clock()
 #
@@ -71,7 +65,6 @@ class SnakeGame:
 
     def start(self):
         self.draw_board()
-        snake = self.snake
 
         while True:
             if self.new_direction_setted:
@@ -80,7 +73,7 @@ class SnakeGame:
                 self.handle_key_event(event)
 
             if self.gs.GAMESTATE == 'playing':
-                if snake.is_dead():
+                if self.snake.is_dead():
                     self.gameover()
 
                 if self.snake_meet_food():
@@ -146,14 +139,12 @@ class SnakeGame:
     # 辅助函数
     def initGame(self):
         """重新开始游戏时，对游戏初始化"""
-        self.score = 0
-        self.gs.GAMESTATE = 'playing'
-        self.isFruitShowing = False
-        self.fruitPos = None
-        self.speed = INITSPEED
-        self.snake = Snake()
-        pygame.mixer.music.rewind()
-        pygame.mixer.music.unpause()
+        self.gs = self.GameState()
+        self.fm = self.FoodManager()
+        self.new_direction_setted = False  # 加锁，防止一个时间周期内改变两次方向，碰到蛇身第二节。
+        self.snake = Snake()  # 蛇对象
+        sound_manager.replay_music()
+
 
     def drawFinal(self):
         screen = self.screen
