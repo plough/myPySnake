@@ -12,3 +12,5 @@ GREEN = (20, 160, 15)
 
 
 TITLE = 'mysnake 1.0'
+
+SCREEN_SIZE = USIZE * COLUMNS + 300, USIZE * ROWS  # 屏幕尺寸

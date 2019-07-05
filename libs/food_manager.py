@@ -4,7 +4,6 @@
 
 # 处理与食物有关的事情
 import random
-
 import pygame
 
 from constants import *
@@ -15,18 +14,24 @@ class FoodManager:
         self.fruit_showing = False  # 当前是否有食物
         self.fruit_pos = None  # 食物位置
 
-    def draw_fruit(self, screen, snake):
+    def draw_fruit(self, screen, invalid_positions):
         """生成并绘制食物"""
         if not self.fruit_showing:
-            tempPos = None
-            while not tempPos or tempPos in snake.bodyList:
-                fX = random.randint(0, ROWS-1)
-                fY = random.randint(0, ROWS-1)
-                tempPos = (fX, fY)
-            self.fruit_pos = tempPos
-        pygame.draw.rect(screen, RED, \
+            self.fruit_pos = self.random_pos(invalid_positions)
+
+        pygame.draw.rect(screen, RED,
                 (self.fruit_pos[0]*USIZE, self.fruit_pos[1]*USIZE, USIZE, USIZE))
+
         self.fruit_showing = True
+
+    @staticmethod
+    def random_pos(invalid_positions):
+        pos = None
+        while not pos or pos in invalid_positions:
+            x = random.randint(0, ROWS - 1)
+            y = random.randint(0, ROWS - 1)
+            pos = (x, y)
+        return pos
 
     def hide_fruit(self):
         self.fruit_showing = False
