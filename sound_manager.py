@@ -24,6 +24,9 @@ class SoundManager:
         pygame.mixer.music.rewind()
         pygame.mixer.music.unpause()
 
+    def pause_music(self):
+        pygame.mixer.music.pause()
+
     def play_eat_sound(self):
         self.sound_eat.play()
 
@@ -33,4 +36,5 @@ class SoundManager:
     def play_cheer_sound(self):
         self.sound_cheer.play()
 
+# 单例模式
 sound_manager = SoundManager()

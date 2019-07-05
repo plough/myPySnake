@@ -1,70 +1,33 @@
 #!/usr/bin/env python3
 # encoding: utf-8
+import sys
 
-from snake import Snake
-import random
-import pygame, sys
+import pygame
 from pygame.locals import *
+
 from constants import *
-from soundmanager import sound_manager
+from food_manager import food_manager
+from game_board import GameBoard
+from game_state import GameState
+from snake import Snake
+from sound_manager import sound_manager
+
 
 class SnakeGame:
-
-    # 游戏状态
-    class GameState:
-        def __init__(self):
-            self.GAME_STATE = 'playing'
-            self.screen_size = USIZE * COLUMNS + 300, USIZE * ROWS  # 屏幕尺寸
-            self.score = 0  # 得分
-            self.full_screen = False  # 是否全屏
-            self.speed = INITSPEED # FPS，游戏速度
-
-        def add_score(self):
-            self.score += 1
-            if self.speed < 15:
-                self.speed *= 1.1
-            if self.score in (30, 50, 65, 75) or\
-                (self.score > 75 and (self.score - 80) % 5 == 0):
-                sound_manager.play_cheer_sound()
-
-    # 处理与食物有关的事情
-    class FoodManager:
-        def __init__(self):
-            self.fruit_showing = False  # 当前是否有食物
-            self.fruit_pos = None  # 食物位置
-
-        def draw_fruit(self, screen, snake):
-            """生成并绘制食物"""
-            if not self.fruit_showing:
-                tempPos = None
-                while not tempPos or tempPos in snake.bodyList:
-                    fX = random.randint(0, ROWS-1)
-                    fY = random.randint(0, ROWS-1)
-                    tempPos = (fX, fY)
-                self.fruit_pos = tempPos
-            pygame.draw.rect(screen, RED, \
-                    (self.fruit_pos[0]*USIZE, self.fruit_pos[1]*USIZE, USIZE, USIZE))
-            self.fruit_showing = True
-
-        def hide_fruit(self):
-            self.fruit_showing = False
-
-
     def __init__(self):
         pygame.init()
 
-        self.initGame()
-
+        self.game_state = GameState()  # 当前游戏状态
+        self.snake = Snake()  # 蛇
+        self.board = GameBoard(self.game_state, self.snake)  # 画板
         self.fpsClock = pygame.time.Clock()
-#
-        self.fontObj = pygame.font.Font('res/Kaiti_GB2312.ttf', 20)
-        self.scoreFont = pygame.font.Font('res/Kaiti_GB2312.ttf', 32)
 
-        self.screen = self.new_screen(self.gs.screen_size)
-        pygame.display.set_caption('mysnake 1.0')
+        self.new_direction_setted = False  # 加锁，防止一个时间周期内改变两次方向，碰到蛇身第二节。
+
+        pygame.display.set_caption(TITLE)
 
     def start(self):
-        self.draw_board()
+        self.board.draw()
 
         while True:
             if self.new_direction_setted:
@@ -72,39 +35,39 @@ class SnakeGame:
             for event in pygame.event.get():
                 self.handle_key_event(event)
 
-            if self.gs.GAMESTATE == 'playing':
+            if self.game_state.STATE == 'playing':
                 if self.snake.is_dead():
                     self.gameover()
 
-                if self.snake_meet_food():
+                elif self.snake_meet_food():
                     self.snake_eat_food()
 
                 self.snake.moveForward()
-                self.draw_board()
-            elif self.gs.GAMESTATE == 'over':
-                pygame.mixer.music.pause()
-                self.drawFinal()
+                self.board.draw()
+            elif self.game_state.STATE == 'over':
+                sound_manager.pause_music()
+                self.board.drawFinal()
             pygame.display.update()
-            self.fpsClock.tick(self.gs.speed)
+            self.fpsClock.tick(self.game_state.speed)
 
     def handle_key_event(self, event):
         if event.type == KEYDOWN:
             if event.key == K_ESCAPE:
                 sys.exit()
             if event.key == K_f:
-                self.screen = self.new_screen(self.gs.screen_size, full=not self.gs.full_screen)
+                self.board.toggle_screen()
 
-            if self.gs.GAMESTATE == 'over' and event.key == K_RETURN:
+            if self.game_state.STATE == 'over' and event.key == K_RETURN:
                 print('Return press')
                 self.initGame()
             if event.key == K_SPACE:
-                if self.gs.GAMESTATE == 'playing':
-                    self.gs.GAMESTATE = 'pausing'
+                if self.game_state.STATE == 'playing':
+                    self.game_state.STATE = 'pausing'
                     pygame.mixer.music.pause()
-                elif self.gs.GAMESTATE == 'pausing':
-                    self.gs.GAMESTATE = 'playing'
+                elif self.game_state.STATE == 'pausing':
+                    self.game_state.STATE = 'playing'
                     pygame.mixer.music.unpause()
-            if self.gs.GAMESTATE == 'playing' and not self.new_direction_setted:
+            if self.game_state.STATE == 'playing' and not self.new_direction_setted:
                 direction = ''
                 if event.key in (K_DOWN, K_s):
                     direction = 'down'
@@ -122,71 +85,30 @@ class SnakeGame:
             sys.exit()
 
     def gameover(self):
-        self.gs.GAMESTATE = 'over'
+        self.game_state.STATE = 'over'
         sound_manager.play_fail_sound()
-        self.drawFinal()
+        self.board.drawFinal()
 
-    def new_screen(self, size, full=False):
-        screen = None
-        if full:
-            self.gs.full_screen = True
-            screen = pygame.display.set_mode(size, FULLSCREEN)
-        else:
-            self.gs.full_screen = False
-            screen = pygame.display.set_mode(size)
-        return screen
 
     # 辅助函数
     def initGame(self):
         """重新开始游戏时，对游戏初始化"""
-        self.gs = self.GameState()
-        self.fm = self.FoodManager()
+        self.game_state = GameState()
         self.new_direction_setted = False  # 加锁，防止一个时间周期内改变两次方向，碰到蛇身第二节。
         self.snake = Snake()  # 蛇对象
+        self.board.update(self.game_state, self.snake)  # 画板
         sound_manager.replay_music()
-
-
-    def drawFinal(self):
-        screen = self.screen
-        pygame.draw.rect(screen, RED, \
-                (200, 120, 400, 300))
-        pygame.draw.rect(screen, BLACK, \
-                (210, 130, 380, 280))
-        overText = self.scoreFont.render('GAME OVER!',\
-                True, WHITE)
-        scoreText = self.scoreFont.render(u'最终得分: ' + str(self.gs.score),\
-                True, WHITE)
-        promptText = self.fontObj.render(u'按 "回车键" 再玩一次',
-                True, WHITE)
-        self.screen.blit(overText, (300, 200))
-        self.screen.blit(scoreText, (300, 240))
-        self.screen.blit(promptText, (300, 290))
 
 
     def snake_eat_food(self):
         self.snake.grow()
-        self.fm.hide_fruit()
+        food_manager.hide_fruit()
         sound_manager.play_eat_sound()
-        self.gs.add_score()
-
-
-    def draw_board(self):
-        self.screen.fill(GREEN)
-        # 分割线
-        pygame.draw.line(self.screen, RED, (502, 0), (502, 500), 3)
-        promptText = self.fontObj.render('按 "空格键" 开始/暂停', True, WHITE)
-        #  promptText2 = fontObj.render(u'开始/暂停', True, WHITE)
-        scoreText = self.scoreFont.render('得分: ' + str(self.gs.score), True, WHITE)
-        self.screen.blit(promptText, (550, 100))
-        #  screen.blit(promptText2, (560, 120))
-        self.screen.blit(scoreText, (570, 220))
-        # drawSnake()
-        self.snake.draw_self(self.screen)
-        self.fm.draw_fruit(self.screen, self.snake)
+        self.game_state.add_score()
 
     # 蛇遇到食物了
     def snake_meet_food(self):
-        return tuple(self.snake.headPos) == self.fm.fruit_pos
+        return tuple(self.snake.headPos) == food_manager.fruit_pos
 
     def checkCollision(self):
         snake = self.snake
