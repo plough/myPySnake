@@ -36,6 +36,8 @@ class GameState:
 
     def set_over(self):
         self.state = 'over'
+        sound_manager.play_fail_sound()
+        sound_manager.pause_music()
 
     def is_play(self):
         return self.state == 'playing'
@@ -45,3 +47,11 @@ class GameState:
 
     def is_over(self):
         return self.state == 'over'
+
+    def toggle_state(self):
+        if self.is_play():
+            self.set_pause()
+            sound_manager.pause_music()
+        elif self.is_pause():
+            self.set_play()
+            sound_manager.resume_music()

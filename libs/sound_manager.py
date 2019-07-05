@@ -4,28 +4,38 @@ import os
 import pygame
 
 class SoundManager:
+    music_path = os.path.join('res', 'background.mp3')
+
     def __init__(self):
         self._init_music()
-        self.sound_eat = self._loadSound('eat.ogg')
-        self.sound_fail = self._loadSound('gameover.ogg')
-        self.sound_cheer = self._loadSound('cheer.ogg')
+        self.sound_eat = self._load_sound('eat.ogg')
+        self.sound_fail = self._load_sound('gameover.ogg')
+        self.sound_cheer = self._load_sound('cheer.ogg')
 
     # 背景音乐
-    def _init_music(self):
+    @classmethod
+    def _init_music(cls):
         pygame.mixer.init()
-        pygame.mixer.music.load(os.path.join('res', 'background.mp3'))
+        pygame.mixer.music.load(cls.music_path)
         pygame.mixer.music.set_volume(0.2)
         pygame.mixer.music.play(-1)
 
-    def _loadSound(self, fname):
-        return pygame.mixer.Sound(os.path.join('res', fname))
+    @staticmethod
+    def _load_sound(file_name):
+        return pygame.mixer.Sound(os.path.join('res', file_name))
 
-    def replay_music(self):
+    @staticmethod
+    def replay_music():
         pygame.mixer.music.rewind()
         pygame.mixer.music.unpause()
 
-    def pause_music(self):
+    @staticmethod
+    def pause_music():
         pygame.mixer.music.pause()
+
+    @staticmethod
+    def resume_music():
+        pygame.mixer.music.unpause()
 
     def play_eat_sound(self):
         self.sound_eat.play()
